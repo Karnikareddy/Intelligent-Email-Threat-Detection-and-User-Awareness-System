@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Intelligent Email Threat Detector</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="background-effects">
+        <div class="glow glow-1"></div>
+        <div class="glow glow-2"></div>
+    </div>
+
+    <!-- Center Module -->
+    <main class="center-module">
+        <h1 class="welcome-title">Intelligent Email Threat Detection</h1>
+        <p class="subtitle">Empowering you with AI-driven analysis to stay safe from evolving threats.</p>
+        <button id="btn-open-analyzer" class="btn-primary">Email Analyzer</button>
+        
+        <!-- Results Container -->
+        <div id="results-container" class="hidden">
+            <h2 id="res-classification"></h2>
+            <div class="insight-box">
+                <h3>Email Insight</h3>
+                <p id="res-email-insight"></p>
+            </div>
+            <div class="insight-box hidden" id="box-url-insight">
+                <h3>URL Insight</h3>
+                <p id="res-url-insight"></p>
+            </div>
+            <div class="insight-box action-box">
+                <h3>Suggested Action</h3>
+                <p id="res-action"></p>
+            </div>
+            <div class="insight-box awareness-box">
+                <h3>Awareness Tips</h3>
+                <p id="res-awareness"></p>
+            </div>
+            <button id="btn-close-results" class="btn-secondary mt-2">Close Analysis</button>
+        </div>
+    </main>
+
+    <!-- Corner Modules -->
+    <!-- Left Corner Container -->
+<div class="left-corner-container">
+    <div class="corner-module" id="mod-confidence">
+        <div class="widget-icon">📊</div>
+        <span>Confidence Score</span>
+    </div>
+
+    <div class="corner-module" id="mod-dashboard">
+        <div class="widget-icon">📈</div>
+        <span>Threat Dashboard</span>
+    </div>
+
+    <div class="corner-module" id="mod-quiz">
+        <div class="widget-icon">🧠</div>
+        <span>Awareness Quiz</span>
+    </div>
+
+    <div class="corner-module" id="mod-summary">
+        <div class="widget-icon">📄</div>
+        <span>Email Summary</span>
+    </div>
+
+    <!-- <div class="corner-module" id="mod-feedback">
+        <div class="widget-icon">💬</div>
+        <span>Feedback</span>
+    </div> -->
+</div>
+
+    <!-- Modals -->
+    <!-- Analyzer Modal -->
+    <div id="modal-analyzer" class="modal hidden">
+        <div class="modal-content glass">
+            <button class="close-btn" onclick="closeModal('modal-analyzer')">&times;</button>
+            <h2>Analyze Email</h2>
+            <form id="analyzer-form">
+                <input type="text" id="inp-subject" placeholder="Subject" required>
+                <textarea id="inp-body" rows="5" placeholder="Paste email body here..." required></textarea>
+                <textarea id="inp-urls" rows="2" placeholder="Paste URLs here (optional)"></textarea>
+                <button type="submit" class="btn-primary" id="btn-submit-analysis">Analyze Now</button>
+            </form>
+            <div id="loading" class="hidden">Analyzing...</div>
+        </div>
+    </div>
+
+    <!-- Confidence Modal -->
+    <div id="modal-confidence" class="modal hidden">
+        <div class="modal-content glass">
+            <button class="close-btn" onclick="closeModal('modal-confidence')">&times;</button>
+            <h2>Confidence Score</h2>
+            <div class="score-display">
+                <h1 id="conf-score">--%</h1>
+                <h3 id="conf-level">--</h3>
+            </div>
+            <div class="info-text">
+                <strong>Meaning:</strong>
+                <p id="conf-meaning">Run an analysis first to see the model's certainty.</p>
+                <strong>Reliability:</strong>
+                <p>The system is highly reliable when strong threat indicators are present.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Dashboard Modal -->
+    <div id="modal-dashboard" class="modal hidden">
+        <div class="modal-content glass">
+            <button class="close-btn" onclick="closeModal('modal-dashboard')">&times;</button>
+            <h2>Threat Dashboard</h2>
+            <div class="dashboard-stats">
+                <div class="stat-card">
+                    <h4>Total Analyzed</h4>
+                    <h2 id="dash-total">0</h2>
+                </div>
+                <div class="stat-card safe">
+                    <h4>Safe</h4>
+                    <h2 id="dash-safe">0</h2>
+                </div>
+                <div class="stat-card spam">
+                    <h4>Spam</h4>
+                    <h2 id="dash-spam">0</h2>
+                </div>
+                <div class="stat-card phishing">
+                    <h4>Phishing</h4>
+                    <h2 id="dash-phishing">0</h2>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Quiz Modal -->
+    <div id="modal-quiz" class="modal hidden">
+        <div class="modal-content glass">
+            <button class="close-btn" onclick="closeModal('modal-quiz')">&times;</button>
+            <h2>🧠 Awareness Quiz</h2>
+            <div id="quiz-question">
+                <p><strong>Question:</strong> An email asks you to verify your bank account urgently. What should you do?</p>
+                <div class="quiz-options">
+                    <button class="quiz-btn" onclick="checkAnswer(false)">(A) Click immediately</button>
+                    <button class="quiz-btn" onclick="checkAnswer(false)">(B) Ignore warning signs</button>
+                    <button class="quiz-btn" onclick="checkAnswer(true)">(C) Verify sender before action</button>
+                </div>
+            </div>
+            <div id="quiz-result" class="hidden">
+                <h3 id="quiz-feedback"></h3>
+                <p><strong>Explanation:</strong> Phishing emails create urgency to trick users. Always verify the sender before clicking links.</p>
+                <button class="btn-secondary" onclick="resetQuiz()">Try Another</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Summary Modal -->
+    <div id="modal-summary" class="modal hidden">
+        <div class="modal-content glass">
+            <button class="close-btn" onclick="closeModal('modal-summary')">&times;</button>
+            <h2>📄 Email Summary</h2>
+            <div class="info-text">
+                <p id="sum-text">Run an analysis first to generate a summary.</p>
+                <hr>
+                <strong>Key Intent:</strong>
+                <p id="sum-intent">Waiting for analysis...</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Feedback Modal -->
+    <div id="modal-feedback" class="modal hidden">
+        <div class="modal-content glass">
+            <button class="close-btn" onclick="closeModal('modal-feedback')">&times;</button>
+            <h2>Feedback</h2>
+            <p>Help us improve our threat detection.</p>
+            <textarea rows="4" placeholder="Your feedback here..." style="width: 100%; box-sizing: border-box;"></textarea>
+            <button class="btn-primary mt-2" onclick="closeModal('modal-feedback')">Submit</button>
+        </div>
+    </div>
+
+    <script src="{{ url_for('static', filename='js/script.js') }}"></script>
+</body>
+</html>
